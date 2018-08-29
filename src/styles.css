@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+.battleShipBoard
+{
+    background-color: #7FFFD4;
+}
+
+.battleShipBoard td{
+    border: 1px solid black;
+}
