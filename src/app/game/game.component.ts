@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Player } from '../interfaces/player';
-import { ImpactStatus } from '../enumerations/impact-status.enum';
 import { Board } from '../interfaces/board';
 import { DelegateService } from '../services/delegate.service';
+import { FireTarget } from '../interfaces/fire-target';
+import { ContentCell } from '../enumerations/content-cell.enum';
 
 @Component({
   selector: 'app-game',
@@ -14,11 +15,11 @@ export class GameComponent implements OnInit {
   playerOne: Player = <Player>{};
   playerTwo: Player = <Player>{};
 
-  constructor(private delegate:DelegateService) {
+  constructor(private delegate: DelegateService) {
     this.playerOne.ownBoard = <Board>{};
     this.playerOne.opositBoard = <Board>{};
-    this.playerOne.ownBoard.positions = new Array<Array<ImpactStatus>>();
-    this.playerOne.opositBoard.positions = new Array<Array<ImpactStatus>>();
+    this.playerOne.ownBoard.positions = new Array<Array<FireTarget>>();
+    this.playerOne.opositBoard.positions = new Array<Array<FireTarget>>();
     this.createBoard();
   }
 
@@ -28,11 +29,27 @@ export class GameComponent implements OnInit {
   createBoard() {
 
     for (let row = 0; row < 10; row++) {
-      this.playerOne.ownBoard.positions[row] = new Array<ImpactStatus>();
-      this.playerOne.opositBoard.positions[row] = new Array<ImpactStatus>();
+    
+      this.playerOne.ownBoard.positions[row] = new Array<FireTarget>();
+      this.playerOne.opositBoard.positions[row] = new Array<FireTarget>();
       for (let column = 0; column < 10; column++) {
-        this.playerOne.ownBoard.positions[row].push(ImpactStatus.Defalutl);
-        this.playerOne.opositBoard.positions[row].push(ImpactStatus.Defalutl);
+
+        var impactCell : FireTarget = {
+          row: row,
+          column : column,
+          content : ContentCell.Sea,
+          id : 'fbac9f9b-cfd8-4771-a3bc-54be7bb6362b'
+        }
+
+        var impactOpositCell : FireTarget = {
+          row: row,
+          column : column,
+          content : ContentCell.Sea,
+          id : 'fbac9f9b-cfd8-4771-a3bc-54be7bb6362b'
+        }
+
+        this.playerOne.ownBoard.positions[row].push(impactCell);
+        this.playerOne.opositBoard.positions[row].push(impactOpositCell);
       }
     }
   }
@@ -43,22 +60,18 @@ export class GameComponent implements OnInit {
     var row = controlId.split("-")[0];
     var column = controlId.split("-")[1];
     var originBoard = controlId.split("-")[2];
-    if(originBoard == "ownBoard"){
-      (this.playerOne.ownBoard.positions[row])[column] = ImpactStatus.Impacted;
+    
+    
+    if (originBoard == "ownBoard") {
+      (
+        this.playerOne.ownBoard.positions[row])[column].content = ContentCell.SuccessImpact;
+        var shoot: FireTarget = (this.playerOne.ownBoard.positions[row])[column];
+        this.delegate.fire(shoot);
     }
-    else{
-      (this.playerOne.opositBoard.positions[row])[column] = ImpactStatus.Impacted;
-    }
-
-    var shoot =
-    {
-rowPos : row,
-columnPos: column,
-controlId : controlId
-
-    };
-
-    this.delegate.fire(shoot)
+    else {      
+      (this.playerOne.opositBoard.positions[row])[column].content = ContentCell.FailImpact;
+      var shoot: FireTarget = (this.playerOne.opositBoard.positions[row])[column];
+      this.delegate.fire(shoot)
+    }   
   }
-
 }

@@ -6,7 +6,7 @@
           <tr *ngFor="let row of playerOne.ownBoard.positions; let indexRow = index">
             <td *ngFor="let column of row; let indexColumn = index"
                  (click)="fireTorpedo($event)"
-                 [style.background-color] = "column == 2 ? 'green' : column == 1 ? 'transparent':'red'"
+                 [style.background-color] = "column.content == 4 ? 'green' : column.content == 1 ? 'transparent':'red'"
                  id={{indexRow}}-{{indexColumn}}-ownBoard>
               X
             </td>
@@ -18,7 +18,7 @@
               <tr *ngFor="let row of playerOne.opositBoard.positions; let indexRow = index">
                 <td *ngFor="let column of row; let indexColumn = index"
                      (click)="fireTorpedo($event)"
-                     [style.background-color] = "column == 2 ? 'green' : column == 1 ? 'transparent':'red'"
+                     [style.background-color] = "column.content == 4 ? 'green' : column.content == 1 ? 'transparent':'red'"
                      id={{indexRow}}-{{indexColumn}}-opositBoard>
                   X
                 </td>

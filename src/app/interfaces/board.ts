@@ -1,5 +1,5 @@
-import { ImpactStatus } from "../enumerations/impact-status.enum";
+import { FireTarget } from "./fire-target";
 
 export interface Board {
-    positions: Array<Array<ImpactStatus>>;
+    positions: Array<Array<FireTarget>>;
 }

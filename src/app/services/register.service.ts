@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { FireTarget } from '../interfaces/fire-target';
+import { User } from '../interfaces/user';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DelegateService {
+export class RegisterService {
 
   constructor(private http: HttpClient) { }
 
-  fire(shoot: FireTarget){
+  register(user: User){
     let headers = new HttpHeaders().set('Content-Type','application/json');
-    var elemets = JSON.stringify(shoot);
-    this.http.post("/api/Values", shoot, {headers: headers})
+    var elemets = JSON.stringify(user);
+    this.http.post("/api/Register", user, {headers: headers})
              .subscribe(error=>
                                {
                                  console.log(error);
