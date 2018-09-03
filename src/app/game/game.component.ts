@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Player } from '../interfaces/player';
-import { Board } from '../interfaces/board';
 import { DelegateService } from '../services/delegate.service';
+
+import { Game } from '../interfaces/game';
 import { FireTarget } from '../interfaces/fire-target';
 import { ContentCell } from '../enumerations/content-cell.enum';
+import { ActivatedRoute } from '@angular/router';
+import { LoginService } from '../services/login.service';
+import { InitGame } from '../interfaces/init-game';
 
 @Component({
   selector: 'app-game',
@@ -12,66 +15,106 @@ import { ContentCell } from '../enumerations/content-cell.enum';
 })
 export class GameComponent implements OnInit {
 
-  playerOne: Player = <Player>{};
-  playerTwo: Player = <Player>{};
+  currentGame: Game = <Game>{
+    LeftBoard: {},
+    RightBoard: {}
+  };
+  firstLoad = true;
+  idUser = "";
+  currentFire: FireTarget = <FireTarget>{};
 
-  constructor(private delegate: DelegateService) {
-    this.playerOne.ownBoard = <Board>{};
-    this.playerOne.opositBoard = <Board>{};
-    this.playerOne.ownBoard.positions = new Array<Array<FireTarget>>();
-    this.playerOne.opositBoard.positions = new Array<Array<FireTarget>>();
-    this.createBoard();
+  colors = ["black", "transparent", "green", "white", "red"];
+  idGame = "";
+  constructor(private delegate: DelegateService, private login: LoginService, private route: ActivatedRoute) {
+
+    this.idGame = route.snapshot.params['id'];
+    if (this.idUser == "") {
+      login.isLogged()
+        .subscribe(
+          result => {
+            this.idUser = result.uid;
+            if (this.firstLoad) {
+              this.loadBoard();
+              this.firstLoad = false;
+            }
+          }
+        );
+    }
+
+    delegate.getFire(this.idGame).subscribe(
+      result => {
+        if (result) {
+          this.currentFire = <FireTarget>result;
+          if (this.currentFire.Side == "LeftBoard") {
+            (this.currentGame.LeftBoard.Positions[this.currentFire.Row])[this.currentFire.Column] = this.currentFire;
+          }
+          else {
+            (this.currentGame.RightBoard.Positions[this.currentFire.Row])[this.currentFire.Column] = this.currentFire;
+          }
+          console.log("current fire");
+          console.log(this.currentFire);
+        }
+      }
+    );
+  }
+
+  loadBoard() {
+    console.log("user id");
+    console.log(this.idUser);
+    var init: InitGame = {
+      IdGame: this.idGame,
+      PlayerId: this.idUser,
+      Size: 10
+    };
+    this.delegate.createOrFind(init).subscribe(
+      result => {
+        if (result) {
+          console.log("para cargar");
+          console.log(this.currentGame);
+          this.currentGame = result;
+        }
+      },
+      error => {
+        console.log("error desde la carga");
+        console.log(error);
+      }
+    );
   }
 
   ngOnInit() {
   }
 
-  createBoard() {
-
-    for (let row = 0; row < 10; row++) {
-    
-      this.playerOne.ownBoard.positions[row] = new Array<FireTarget>();
-      this.playerOne.opositBoard.positions[row] = new Array<FireTarget>();
-      for (let column = 0; column < 10; column++) {
-
-        var impactCell : FireTarget = {
-          row: row,
-          column : column,
-          content : ContentCell.Sea,
-          id : 'fbac9f9b-cfd8-4771-a3bc-54be7bb6362b'
-        }
-
-        var impactOpositCell : FireTarget = {
-          row: row,
-          column : column,
-          content : ContentCell.Sea,
-          id : 'fbac9f9b-cfd8-4771-a3bc-54be7bb6362b'
-        }
-
-        this.playerOne.ownBoard.positions[row].push(impactCell);
-        this.playerOne.opositBoard.positions[row].push(impactOpositCell);
-      }
-    }
-  }
-
   fireTorpedo(e) {
-    console.log(e);
-    var controlId = e.target.id;
-    var row = controlId.split("-")[0];
-    var column = controlId.split("-")[1];
-    var originBoard = controlId.split("-")[2];
-    
-    
-    if (originBoard == "ownBoard") {
-      (
-        this.playerOne.ownBoard.positions[row])[column].content = ContentCell.SuccessImpact;
-        var shoot: FireTarget = (this.playerOne.ownBoard.positions[row])[column];
-        this.delegate.fire(shoot);
+
+    if (this.currentFire.PlayerId == this.idUser) {
+      alert("no es tu turno aun");
     }
-    else {      
-      (this.playerOne.opositBoard.positions[row])[column].content = ContentCell.FailImpact;
-      var shoot: FireTarget = (this.playerOne.opositBoard.positions[row])[column];
+    else {
+      var controlId = e.target.id;
+      var row = controlId.split("*")[0];
+      var column = controlId.split("*")[1];
+      var originBoard = controlId.split("*")[2];
+      var idGame = controlId.split("*")[3];
+      var shoot: FireTarget =
+      {
+        Column: column,
+        Row: row,
+        Content: ContentCell.SuccessImpact,
+        Id: idGame,
+        Side: originBoard,
+        PlayerId: this.idUser
+      }
+
       this.delegate.fire(shoot)
-    }   
+        .subscribe(
+          response => {
+            console.log(response.Side);
+          },
+          error => {
+            console.log("error en disparo");
+            console.log(error);
+          }
+        );
+    }
   }
 }

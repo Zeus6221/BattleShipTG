@@ -1,5 +1,6 @@
 import { FireTarget } from "./fire-target";
 
 export interface Board {
-    positions: Array<Array<FireTarget>>;
+    Positions: Array<Array<FireTarget>>;
+    IdPlayer:string;
 }

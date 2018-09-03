@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
-import { LoginService } from './services/login.service';
+import { Injectable } from '@angular/core';
+import { CanActivate } from '@angular/router';
+import { LoginService } from './login.service';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+@Injectable({
+  providedIn: 'root'
 })
-export class AppComponent {
-  title = 'BattleShipTG';
+export class GuardService implements CanActivate{
+
   loggedIn = false;
   constructor(private loginService: LoginService) {
     loginService.isLogged().subscribe(result => {
@@ -25,8 +24,7 @@ export class AppComponent {
     )
   }
 
-  logout()
-  { 
-    this.loginService.logout();
+  canActivate(){
+    return this.loggedIn;
   }
 }

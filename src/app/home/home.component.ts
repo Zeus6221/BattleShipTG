@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DelegateService } from '../services/delegate.service';
 
 @Component({
   selector: 'app-home',
@@ -7,7 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  availableGames: any;
+  constructor(private delegate: DelegateService) {
+
+    delegate.getAvailableGames().subscribe(
+      response => {
+        this.availableGames = response;
+        console.log(response);
+      }
+    );
+
+  }
 
   ngOnInit() {
   }

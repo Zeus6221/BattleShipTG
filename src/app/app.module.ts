@@ -1,24 +1,39 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule} from '@angular/forms'
+import { FormsModule } from '@angular/forms'
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { GameComponent } from './game/game.component';
-import {Routes, RouterModule} from '@angular/router';
-import { registerContentQuery } from '@angular/core/src/render3/instructions';
+import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { HttpClientModule } from '@angular/common/http'
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabaseModule, AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireAuthModule } from 'angularfire2/auth';
+import { GuardService } from './services/guard.service';
+import { LoginService } from './services/login.service';
+import { RegisterService } from './services/register.service';
+import { AvailableGamesComponent } from './available-games/available-games.component';
 
 const appRoutes: Routes =
-[
-  {path:'', component:HomeComponent},
-  {path:'home', component:HomeComponent},
-  {path:'login', component:LoginComponent},
-  {path:'register',component:RegisterComponent},
-  {path:'game',component:GameComponent}
-]
+  [
+    { path: '', component: HomeComponent },
+    { path: 'home', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    { path: 'game/:id', component: GameComponent }
+    //{ path: 'game/:id', component: GameComponent, canActivate: [GuardService] }
+  ]
+
+export const firebaseConfig = {
+  apiKey: "AIzaSyDul8dAV__kaO0mW6dCcQatQ1PJB0ydIAs",
+  authDomain: "battleship-dbe3a.firebaseapp.com",
+  databaseURL: "https://battleship-dbe3a.firebaseio.com",
+  storageBucket: "battleship-dbe3a.appspot.com",
+  messagingSenderId: '716676542288'
+};
 
 @NgModule({
   declarations: [
@@ -26,15 +41,19 @@ const appRoutes: Routes =
     LoginComponent,
     RegisterComponent,
     GameComponent,
-    HomeComponent
+    HomeComponent,
+    AvailableGamesComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
-    HttpClientModule
+    HttpClientModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule,
+    AngularFireAuthModule
   ],
-  providers: [],
+  providers: [AngularFireDatabase, GuardService, LoginService, RegisterService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
