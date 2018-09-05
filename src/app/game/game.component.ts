@@ -7,14 +7,28 @@ import { ActivatedRoute } from '@angular/router';
 import { LoginService } from '../services/login.service';
 import { InitGame } from '../interfaces/init-game';
 import { ActualGame } from '../interfaces/actual-game';
+import { trigger, state, style, transition, animate } from "@angular/animations"
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  styleUrls: ['./game.component.css'],
+  animations: [
+    trigger('contenedorAnimable', [
+      state('inicial', style({
+        opacity: 0
+      })),
+      state('final', style({
+        opacity: 1
+      })),
+      transition('final => inicial', animate(2000)),
+      transition('inicial => final', animate(2000))
+    ])
+  ]
 })
 export class GameComponent implements OnInit {
 
+  state = 'inicial';
   currentGame: Game = <Game>{
     LeftBoard: {},
     RightBoard: {}
@@ -25,7 +39,7 @@ export class GameComponent implements OnInit {
   idUser = "";
   currentFire: FireTarget = <FireTarget>{};
   actualGame: any;
-
+  canPlay: boolean = false;
   colors = ["black", "transparent", "green", "#00ffff", "red"];
   idGame = "";
   side: string = "";
@@ -104,6 +118,7 @@ export class GameComponent implements OnInit {
             (this.currentGame.RightBoard.Positions[this.currentFire.Row])[this.currentFire.Column] = this.currentFire;
           }
           this.fireloaded = true;
+          this.canPlay = this.currentFire.PlayerId != this.idUser;
         }
       }
     );
@@ -112,12 +127,12 @@ export class GameComponent implements OnInit {
   ngOnInit() {
   }
 
-  fireTorpedo(e) {
+  animar() {
+    this.state = this.state == 'final' ? 'inicial' : 'final';
+  }
 
-    if (this.currentFire.PlayerId == this.idUser) {
-      alert("no es tu turno aun");
-    }
-    else {
+  fireTorpedo(e) {
+    if (this.canPlay) {
 
       var controlId = e.target.id;
       var dataFire = controlId.split("*");
@@ -133,7 +148,7 @@ export class GameComponent implements OnInit {
       }
 
       if (shoot.Side != this.side) {
-        alert("este es tu lado del tablero, no dispares a tus barcos ;)!!!");
+        this.animar();
       }
       else {
         this.delegate.fire(shoot)

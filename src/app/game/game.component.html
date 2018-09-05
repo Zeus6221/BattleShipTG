@@ -20,5 +20,17 @@
         </tr>
       </table>
     </div>
+    <div class="has-text-centered" [@contenedorAnimable]='state' *ngIf="canPlay">
+      <span class="alert alert-warning" role="alert">Este es tu lado del tablero, no dispares a tus barcos. ;)!!!
+      </span>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-md-2 offset-4 col-md-4" *ngIf="canPlay">
+      <h5 class="alert alert-warning text-center">Afina tu punteria, es tu turno!</h5>
+    </div>
+    <div class="col-md-2 offset-4 col-md-4" *ngIf="!canPlay">
+      <h5 class="alert alert-warning text-center">Paciencia es el turno de tu contrincante!</h5>
+    </div>
   </div>
 </div>

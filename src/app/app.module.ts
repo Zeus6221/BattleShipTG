@@ -16,6 +16,7 @@ import { GuardService } from './services/guard.service';
 import { LoginService } from './services/login.service';
 import { RegisterService } from './services/register.service';
 import { CreateGameComponent } from './create-game/create-game.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 const appRoutes: Routes =
@@ -48,6 +49,7 @@ export const firebaseConfig = {
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
     HttpClientModule,
