@@ -1,11 +1,11 @@
 <div class="containter">
-  <div class="row">
+  <div class="row mt-5">
     <div class="col-md-4 offset-1 col-md-4">
       <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.LeftBoard.Positions; let indexRow = index">
-          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)" [style.background-color]="colors[column.Content]"
+          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)" [style.background-color]="((side == 'LeftBoard'||side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
             id={{indexRow}}*{{indexColumn}}*LeftBoard*{{column.Id}}>
-            {{column.Content}}
+            X
           </td>
         </tr>
       </table>
@@ -13,9 +13,9 @@
     <div class="col-md-4 offset-1 col-md-4">
       <table class="table table-bordered table-dark">
         <tr *ngFor="let row of currentGame.RightBoard.Positions; let indexRow = index">
-          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)" [style.background-color]="colors[column.Content]"
+          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)" [style.background-color]="((side == 'RightBoard'|| side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
             id={{indexRow}}*{{indexColumn}}*RightBoard*{{column.Id}}>
-            {{column.Content}}
+            X
           </td>
         </tr>
       </table>

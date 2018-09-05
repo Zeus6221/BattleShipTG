@@ -1,3 +1,41 @@
-<p>
-  home works!
-</p>
+<div class="container">
+  <div class="align-middle">
+
+    <div class="row mt-5 mb-5">
+      <div class="card col-md-8">
+        <div class="card-body">
+          <form class="form-inline">
+            <div class="form-group mb-2">
+              <!-- <label for="nombre" class="sr-only">Titulo</label> -->
+              <input type="text" readonly class="form-control-plaintext" id="nombre" value="Title">
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+              <!-- <label for="titleGame" class="sr-only"></label> -->
+              <input [(ngModel)]="title" name="titleGame" class="form-control" id="titleGame">
+            </div>
+            <button class="btn btn-primary mb-2" (click)="createNewGame()">Crear nuevo juego</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row mt-5">
+      <div class="col-md-8">
+        <h2>Juegos disponibles</h2>
+        <ul class="list-group">
+          <ng-container *ngFor="let game of availableGames">
+            <li class="list-group-item">
+              <a routerLink='/game/{{game.GameId}}'>
+                <h3>{{game.TitleGame}}</h3>
+              </a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>

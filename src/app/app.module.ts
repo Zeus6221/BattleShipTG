@@ -15,7 +15,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { GuardService } from './services/guard.service';
 import { LoginService } from './services/login.service';
 import { RegisterService } from './services/register.service';
-import { AvailableGamesComponent } from './available-games/available-games.component';
+import { CreateGameComponent } from './create-game/create-game.component';
+
 
 const appRoutes: Routes =
   [
@@ -23,7 +24,8 @@ const appRoutes: Routes =
     { path: 'home', component: HomeComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'game/:id', component: GameComponent }
+    { path: 'game/:id', component: GameComponent },
+    { path: 'crear/new', component: CreateGameComponent }
     //{ path: 'game/:id', component: GameComponent, canActivate: [GuardService] }
   ]
 
@@ -42,7 +44,7 @@ export const firebaseConfig = {
     RegisterComponent,
     GameComponent,
     HomeComponent,
-    AvailableGamesComponent
+    CreateGameComponent,
   ],
   imports: [
     BrowserModule,
