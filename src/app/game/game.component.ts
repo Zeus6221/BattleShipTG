@@ -11,7 +11,6 @@ import { ToastrService } from 'ngx-toastr';
 import { ConversationService } from '../services/conversation.service';
 import { Conversation } from '../interfaces/conversation';
 
-
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -34,6 +33,8 @@ export class GameComponent implements OnInit {
   side: string = "";
   conversationId: string = "";
   gameChatMessage: string = "";
+  userName: string;
+  messages: Array<Conversation> = new Array<Conversation>();
 
   constructor(
     private conversation: ConversationService,
@@ -41,6 +42,14 @@ export class GameComponent implements OnInit {
     private login: LoginService,
     private route: ActivatedRoute,
     private toastr: ToastrService) {
+
+    const mess: Conversation = {
+      Id: "",
+      Sender: "",
+      Text: "",
+      Timestamp: Date.now()
+    }
+    this.messages.push(mess)
     this.idGame = route.snapshot.params['id'];
     this.loadUser();
   }
@@ -51,6 +60,8 @@ export class GameComponent implements OnInit {
         .subscribe(
           result => {
             this.idUser = result.uid;
+            var positionArroba = result.email.indexOf("@");
+            this.userName = result.email.substr(0, positionArroba);
             if (this.firstLoad) {
               this.loadBoard();
               this.firstLoad = false;
@@ -67,6 +78,7 @@ export class GameComponent implements OnInit {
       TitleGame: "",
       Size: 10
     };
+
     this.delegate.createOrFind(init).subscribe(
       result => {
         if (result) {
@@ -83,23 +95,27 @@ export class GameComponent implements OnInit {
   }
 
   loadActualGame() {
-    console.log("user id");
-    console.log(this.idUser);
-    this.delegate.getActualGame(this.idGame).subscribe(
-      response => {
-        this.actualGame = <ActualGame>response;
-        if (this.actualGame.RightPlayerId != this.idUser) {
-          this.actualGame.LeftPlayerId = this.idUser;
-          this.side = 'LeftBoard';
-          this.delegate.updateActualGame(this.actualGame).subscribe(
-            error => { console.log(error); }
-          );
-        }
-        else {
-          this.side = "RightBoard";
-        }
-      }
-    );
+    this.delegate
+      .getActualGame(this.idGame)
+      .subscribe(
+        response => {
+          this.actualGame = <ActualGame>response;
+          const ids = [this.actualGame.RightPlayerId, this.actualGame.LeftPlayerId].sort();
+          this.conversationId = ids.join();
+          this.SetOpositPlayer();
+        });
+  }
+
+  SetOpositPlayer() {
+    if (this.actualGame && this.actualGame.RightPlayerId != this.idUser) {
+      this.actualGame.LeftPlayerId = this.idUser;
+      this.side = 'LeftBoard';
+      this.delegate.updateActualGame(this.actualGame).subscribe(error => { console.log(error); });
+    }
+    else if (this.actualGame) {
+      this.side = "RightBoard";
+    }
+    this.getConversations();
   }
 
   loadFire() {
@@ -166,6 +182,25 @@ export class GameComponent implements OnInit {
     }
   }
 
+  getConversations() {
+    console.log(this.conversationId);
+    console.log(this.idUser);
+    if (this.conversationId != "") {
+      this.conversation
+        .getConversation(this.conversationId)
+        .valueChanges()
+        .subscribe(
+          result => {
+            this.messages = <Array<Conversation>>result;
+            console.log(this.messages);
+          },
+          error => {
+            console.log(error);
+          }
+        );
+    }
+  }
+
   sendMessage() {
     if (this.conversationId == "") {
       this.delegate
@@ -176,23 +211,24 @@ export class GameComponent implements OnInit {
             const ids = [this.actualGame.RightPlayerId, this.actualGame.LeftPlayerId].sort();
             this.conversationId = ids.join();
             this.createConversation();
-          }
-        );
+          });
     }
-    else{
-      this.createConversation();
+    else {
+      this.createConversation()
+        ;
     }
-    //this.conversation.createConversation();
   }
+
   createConversation() {
 
     const messsage: Conversation = {
       Id: this.conversationId,
       Timestamp: Date.now(),
-      Text: this.gameChatMessage
+      Text: this.gameChatMessage,
+      Sender: this.userName
     }
 
-    if(this.gameChatMessage!=""){
+    if (this.gameChatMessage != "") {
       this.conversation.createConversation(messsage).then(
         () => {
           console.log("mensaje enviado");
@@ -200,6 +236,6 @@ export class GameComponent implements OnInit {
         }
       );
     }
-    
+
   }
 }

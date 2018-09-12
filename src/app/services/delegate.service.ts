@@ -37,8 +37,7 @@ export class DelegateService {
     return this.http.get<ActualGame>('/api/ActualGame/' + idGame);
   }
 
-  updateActualGame(actualGame: ActualGame) {
-    console.log(JSON.stringify(actualGame));
+  updateActualGame(actualGame: ActualGame) {    
     let headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post('/api/ActualGame', actualGame, { headers: headers });
   }

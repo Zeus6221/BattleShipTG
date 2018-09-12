@@ -1,5 +1,6 @@
 export interface Conversation {
     Id:string;
-    Timestamp:number;
+    Sender: string;
     Text:string;
+    Timestamp:number;
 }
