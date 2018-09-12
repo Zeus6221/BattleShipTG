@@ -1,7 +1,7 @@
 {
-    "/api/*": {
-      "target": "http://192.168.0.4:50929",
-      "secure": false,
-      "changeOrigin": true
-    }    
+  "/api/*": {
+    "target": "http://192.168.0.4:50929",
+    "secure": false,
+    "changeOrigin": true
+  }
 }

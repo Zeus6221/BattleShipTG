@@ -1,9 +1,18 @@
 <div class="containter">
   <div class="row mt-5">
+    <div class="col-md-2 offset-4 col-md-4" *ngIf="canPlay">
+      <h5 class="alert alert-warning text-center">Afina tu punteria, es tu turno!</h5>
+    </div>
+    <div class="col-md-2 offset-4 col-md-4" *ngIf="!canPlay">
+      <h5 class="alert alert-warning text-center">Paciencia es el turno de tu contrincante!</h5>
+    </div>
+  </div>
+  <div class="row mt-5">
     <div class="col-md-4 offset-1 col-md-4">
       <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.LeftBoard.Positions; let indexRow = index">
-          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)" [style.background-color]="((side == 'LeftBoard'||side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
+          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
+            [style.background-color]="((side == 'LeftBoard'||side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
             id={{indexRow}}*{{indexColumn}}*LeftBoard*{{column.Id}}>
             X
           </td>
@@ -13,24 +22,19 @@
     <div class="col-md-4 offset-1 col-md-4">
       <table class="table table-bordered table-dark">
         <tr *ngFor="let row of currentGame.RightBoard.Positions; let indexRow = index">
-          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)" [style.background-color]="((side == 'RightBoard'|| side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
+          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
+            [style.background-color]="((side == 'RightBoard'|| side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
             id={{indexRow}}*{{indexColumn}}*RightBoard*{{column.Id}}>
             X
           </td>
         </tr>
       </table>
     </div>
-    <div class="has-text-centered" [@contenedorAnimable]='state' *ngIf="canPlay">
-      <span class="alert alert-warning" role="alert">Este es tu lado del tablero, no dispares a tus barcos. ;)!!!
-      </span>
-    </div>
-  </div>
-  <div class="row mt-5">
-    <div class="col-md-2 offset-4 col-md-4" *ngIf="canPlay">
-      <h5 class="alert alert-warning text-center">Afina tu punteria, es tu turno!</h5>
-    </div>
-    <div class="col-md-2 offset-4 col-md-4" *ngIf="!canPlay">
-      <h5 class="alert alert-warning text-center">Paciencia es el turno de tu contrincante!</h5>
+    <div class="row mt-5">
+      <div class="col-md-4 offset-1 col-md-4 messageControlsContainer">
+        <textarea [(ngModel)] = "gameChatMessage" (keyup.enter)="sendMessage()" class="form-control"></textarea>
+        <button class="btn btn-primary" (click) = "sendMessage()">send message</button>
+      </div>
     </div>
   </div>
 </div>

@@ -7,28 +7,17 @@ import { ActivatedRoute } from '@angular/router';
 import { LoginService } from '../services/login.service';
 import { InitGame } from '../interfaces/init-game';
 import { ActualGame } from '../interfaces/actual-game';
-import { trigger, state, style, transition, animate } from "@angular/animations"
+import { ToastrService } from 'ngx-toastr';
+import { ConversationService } from '../services/conversation.service';
+import { Conversation } from '../interfaces/conversation';
+
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css'],
-  animations: [
-    trigger('contenedorAnimable', [
-      state('inicial', style({
-        opacity: 0
-      })),
-      state('final', style({
-        opacity: 1
-      })),
-      transition('final => inicial', animate(2000)),
-      transition('inicial => final', animate(2000))
-    ])
-  ]
+  styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
-
-  state = 'inicial';
   currentGame: Game = <Game>{
     LeftBoard: {},
     RightBoard: {}
@@ -38,13 +27,20 @@ export class GameComponent implements OnInit {
   firstLoad = true;
   idUser = "";
   currentFire: FireTarget = <FireTarget>{};
-  actualGame: any;
+  actualGame: ActualGame;
   canPlay: boolean = false;
   colors = ["black", "transparent", "green", "#00ffff", "red"];
   idGame = "";
   side: string = "";
+  conversationId: string = "";
+  gameChatMessage: string = "";
 
-  constructor(private delegate: DelegateService, private login: LoginService, private route: ActivatedRoute) {
+  constructor(
+    private conversation: ConversationService,
+    private delegate: DelegateService,
+    private login: LoginService,
+    private route: ActivatedRoute,
+    private toastr: ToastrService) {
     this.idGame = route.snapshot.params['id'];
     this.loadUser();
   }
@@ -91,11 +87,11 @@ export class GameComponent implements OnInit {
     console.log(this.idUser);
     this.delegate.getActualGame(this.idGame).subscribe(
       response => {
-        var actual = <ActualGame>response;
-        if (actual.RightPlayerId != this.idUser) {
-          actual.LeftPlayerId = this.idUser;
+        this.actualGame = <ActualGame>response;
+        if (this.actualGame.RightPlayerId != this.idUser) {
+          this.actualGame.LeftPlayerId = this.idUser;
           this.side = 'LeftBoard';
-          this.delegate.updateActualGame(actual).subscribe(
+          this.delegate.updateActualGame(this.actualGame).subscribe(
             error => { console.log(error); }
           );
         }
@@ -127,42 +123,83 @@ export class GameComponent implements OnInit {
   ngOnInit() {
   }
 
-  animar() {
-    this.state = this.state == 'final' ? 'inicial' : 'final';
+  validateShoot(shoot: FireTarget): boolean {
+
+    var result = true;
+    if (!this.canPlay) {
+      this.toastr.warning('Paciencia, es el turno de tu oponente, crucemos los dedos para que no te atrape :)');
+      result = false;
+    }
+    if (shoot.Side != this.side) {
+      this.toastr.warning('Estos son tus propios barcos, el fuego amigo no es permitido ;)');
+      result = false;
+    }
+    return result;
   }
 
   fireTorpedo(e) {
-    if (this.canPlay) {
-
-      var controlId = e.target.id;
-      var dataFire = controlId.split("*");
-
-      var shoot: FireTarget =
-      {
-        Column: dataFire[1],
-        Row: dataFire[0],
-        Content: ContentCell.SuccessImpact,
-        Id: dataFire[3],
-        Side: dataFire[2],
-        PlayerId: this.idUser
-      }
-
-      if (shoot.Side != this.side) {
-        this.animar();
-      }
-      else {
-        this.delegate.fire(shoot)
-          .subscribe(
-            response => {
-              console.log(response.Side);
-            },
-            error => {
-              console.log("error en disparo");
-              console.log(error);
-            }
-          );
-      }
-
+    var controlId = e.target.id;
+    var dataFire = controlId.split("*");
+    this.sendMessage();
+    var shoot: FireTarget =
+    {
+      Column: dataFire[1],
+      Row: dataFire[0],
+      Content: ContentCell.SuccessImpact,
+      Id: dataFire[3],
+      Side: dataFire[2],
+      PlayerId: this.idUser
     }
+
+    var validShoot = this.validateShoot(shoot);
+    if (validShoot) {
+      this.delegate.fire(shoot)
+        .subscribe(
+          response => {
+            console.log(response.Side);
+          },
+          error => {
+            console.log("error en disparo");
+            console.log(error);
+          }
+        );
+    }
+  }
+
+  sendMessage() {
+    if (this.conversationId == "") {
+      this.delegate
+        .getActualGame(this.idGame)
+        .subscribe(
+          response => {
+            this.actualGame = <ActualGame>response;
+            const ids = [this.actualGame.RightPlayerId, this.actualGame.LeftPlayerId].sort();
+            this.conversationId = ids.join();
+            this.createConversation();
+          }
+        );
+    }
+    else{
+      this.createConversation();
+    }
+    //this.conversation.createConversation();
+  }
+  createConversation() {
+
+    const messsage: Conversation = {
+      Id: this.conversationId,
+      Timestamp: Date.now(),
+      Text: this.gameChatMessage
+    }
+
+    if(this.gameChatMessage!=""){
+      this.conversation.createConversation(messsage).then(
+        () => {
+          console.log("mensaje enviado");
+          this.gameChatMessage = "";
+        }
+      );
+    }
+    
   }
 }
