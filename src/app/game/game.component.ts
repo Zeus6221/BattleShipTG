@@ -10,6 +10,8 @@ import { ActualGame } from '../interfaces/actual-game';
 import { ToastrService } from 'ngx-toastr';
 import { ConversationService } from '../services/conversation.service';
 import { Conversation } from '../interfaces/conversation';
+import { UserService } from '../services/user.service';
+import { User } from '../interfaces/user';
 
 @Component({
   selector: 'app-game',
@@ -23,24 +25,28 @@ export class GameComponent implements OnInit {
   };
 
   fireloaded = false;
-  firstLoad = true;
-  idUser = "";
+  firstLoad = true;  
   currentFire: FireTarget = <FireTarget>{};
   actualGame: ActualGame;
   canPlay: boolean = false;
-  colors = ["black", "transparent", "green", "#00ffff", "red"];
+
+  shipQuarter:string = "#00F12F";
+  fail:string = "#F10032";
+  success:string = "#F1B500";
+  colors = ["black", "transparent", this.shipQuarter, this.success, this.fail];
   idGame = "";
   side: string = "";
   conversationId: string = "";
-  gameChatMessage: string = "";
-  userName: string;
+  gameChatMessage: string = "";  
   messages: Array<Conversation> = new Array<Conversation>();
+  loggedUser: User = <User>{};
 
   constructor(
     private conversation: ConversationService,
     private delegate: DelegateService,
     private login: LoginService,
     private route: ActivatedRoute,
+    private userService: UserService,
     private toastr: ToastrService) {
 
     const mess: Conversation = {
@@ -48,20 +54,26 @@ export class GameComponent implements OnInit {
       Sender: "",
       Text: "",
       Timestamp: Date.now()
-    }
-    this.messages.push(mess)
-    this.idGame = route.snapshot.params['id'];
+    };
+    
+    this.messages.push(mess);
+    this.idGame = route.snapshot.params['id'];           
     this.loadUser();
   }
 
   loadUser() {
-    if (this.idUser == "") {
+    if (!this.loggedUser.id) {
       this.login.isLogged()
         .subscribe(
           result => {
-            this.idUser = result.uid;
-            var positionArroba = result.email.indexOf("@");
-            this.userName = result.email.substr(0, positionArroba);
+            this.userService
+              .getUser(result.uid)
+              .subscribe(
+                result => {
+                  this.loggedUser = <User>result;
+                }
+              );
+
             if (this.firstLoad) {
               this.loadBoard();
               this.firstLoad = false;
@@ -74,7 +86,7 @@ export class GameComponent implements OnInit {
   loadBoard() {
     var init: InitGame = {
       IdGame: this.idGame,
-      PlayerId: this.idUser,
+      PlayerId: this.loggedUser.id,
       TitleGame: "",
       Size: 10
     };
@@ -107,8 +119,8 @@ export class GameComponent implements OnInit {
   }
 
   SetOpositPlayer() {
-    if (this.actualGame && this.actualGame.RightPlayerId != this.idUser) {
-      this.actualGame.LeftPlayerId = this.idUser;
+    if (this.actualGame && this.actualGame.RightPlayerId != this.loggedUser.id) {
+      this.actualGame.LeftPlayerId = this.loggedUser.id;
       this.side = 'LeftBoard';
       this.delegate.updateActualGame(this.actualGame).subscribe(error => { console.log(error); });
     }
@@ -130,7 +142,7 @@ export class GameComponent implements OnInit {
             (this.currentGame.RightBoard.Positions[this.currentFire.Row])[this.currentFire.Column] = this.currentFire;
           }
           this.fireloaded = true;
-          this.canPlay = this.currentFire.PlayerId != this.idUser;
+          this.canPlay = this.currentFire.PlayerId != this.loggedUser.id;
         }
       }
     );
@@ -164,7 +176,7 @@ export class GameComponent implements OnInit {
       Content: ContentCell.SuccessImpact,
       Id: dataFire[3],
       Side: dataFire[2],
-      PlayerId: this.idUser
+      PlayerId: this.loggedUser.id
     }
 
     var validShoot = this.validateShoot(shoot);
@@ -184,7 +196,7 @@ export class GameComponent implements OnInit {
 
   getConversations() {
     console.log(this.conversationId);
-    console.log(this.idUser);
+    console.log(this.loggedUser.id);
     if (this.conversationId != "") {
       this.conversation
         .getConversation(this.conversationId)
@@ -225,7 +237,7 @@ export class GameComponent implements OnInit {
       Id: this.conversationId,
       Timestamp: Date.now(),
       Text: this.gameChatMessage,
-      Sender: this.userName
+      Sender: this.loggedUser.nick
     }
 
     if (this.gameChatMessage != "") {

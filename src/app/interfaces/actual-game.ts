@@ -5,5 +5,4 @@ export interface ActualGame {
     TitleGame: string;
     RightFirerecived: string;
     LeftFireReceived: string;
-
 }

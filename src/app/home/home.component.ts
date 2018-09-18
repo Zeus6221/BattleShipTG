@@ -4,6 +4,9 @@ import { InitGame } from '../interfaces/init-game';
 import { LoginService } from '../services/login.service';
 import { ActualGame } from '../interfaces/actual-game';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+import { User } from '../interfaces/user';
+
 
 @Component({
   selector: 'app-home',
@@ -14,19 +17,27 @@ export class HomeComponent implements OnInit {
 
   availableGames: any;
   title: string;
-  idUser = "";
+  loggedUser: User = <User>{};
 
-  constructor(private delegate: DelegateService, private login: LoginService, private router: Router) {
-
-    if (this.idUser == "") {
+  constructor(private delegate: DelegateService,
+    private login: LoginService,
+    private router: Router,
+    private userService: UserService) {      
+    if (!this.loggedUser.id) {
       login.isLogged()
         .subscribe(
           result => {
-            this.idUser = result.uid;
+            userService.getUser(result.uid)
+            .subscribe(result => {
+              this.loggedUser = <User>result;
+              this.getAvailableGames();
+            });
           }
         );
     }
-    this.getAvailableGames();
+    else{
+      this.getAvailableGames();
+    }
   }
 
   getAvailableGames() {
@@ -34,8 +45,8 @@ export class HomeComponent implements OnInit {
       response => {
         if (response) {
           var list = <ActualGame[]>response;
-          console.log(list);
-          list = list.filter(game => game.LeftPlayerId == "");
+          console.log(this.loggedUser);
+          list = list.filter(game => game.LeftPlayerId == "" && game.RightPlayerId != this.loggedUser.id);
           this.availableGames = list;
         }
       }
@@ -47,14 +58,14 @@ export class HomeComponent implements OnInit {
     var idGame = Date.now().toString();
     var init: InitGame = {
       IdGame: idGame,
-      PlayerId: this.idUser,
+      PlayerId: this.loggedUser.id,
       TitleGame: this.title,
       Size: 10
     };
 
     this.delegate.createOrFind(init).subscribe(
       result => {
-        if (result) {
+        if (result) {          
           console.log("para cargar");
           console.log(result);
           this.router.navigate(['/game/' + result.Id]);

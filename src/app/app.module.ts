@@ -23,12 +23,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 const appRoutes: Routes =
   [
     { path: '', component: HomeComponent },
-    { path: 'home', component: HomeComponent },
+    { path: 'home', component: HomeComponent},
     { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
-    { path: 'game/:id', component: GameComponent },
-    { path: 'crear/new', component: CreateGameComponent }
-    //{ path: 'game/:id', component: GameComponent, canActivate: [GuardService] }
+    { path: 'register', component: RegisterComponent },    
+    { path: 'crear/new', component: CreateGameComponent },
+    { path: 'game/:id', component: GameComponent }
+//    { path: 'game/:id', component: GameComponent, canActivate: [GuardService] }
   ]
 
 export const firebaseConfig = {

@@ -9,7 +9,7 @@ import { User } from '../interfaces/user';
 })
 export class RegisterComponent implements OnInit {
 
-  user: User = { password: "", email: "" };
+  user: User = <User>{};
 
   constructor(private registerUser: RegisterService) { }
 

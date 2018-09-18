@@ -1,92 +1,66 @@
 <div class="containter">
-  <div class="row mt-5">
-    <div class="col-md-2 offset-4 col-md-4" *ngIf="canPlay">
+  <div class="row mt-5 mt-5 mb-5">
+    <div class="col-md-8 offset-2 col-xs-8" *ngIf="canPlay">
       <h5 class="alert alert-warning text-center">Afina tu punteria, es tu turno!</h5>
     </div>
-    <div class="col-md-2 offset-4 col-md-4" *ngIf="!canPlay">
+    <div class="col-md-10 offset-1 col-xs-10" *ngIf="!canPlay">
       <h5 class="alert alert-warning text-center">Paciencia es el turno de tu contrincante!</h5>
     </div>
   </div>
-  <div class="row mt-5">
-    <div class="col-md-4 offset-1 col-xs-4">
-      <table class="table table-bordered table-dark">
+
+  <div class="row offset-2 col-8 col-ms-8 mt-5 mb-5">    
+    <div class="col mb-5">
+      <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.RightBoard.Positions; let indexRow = index">
           <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
             [style.background-color]="((side == 'RightBoard'|| side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
             id={{indexRow}}*{{indexColumn}}*RightBoard*{{column.Id}}>
-            X
           </td>
         </tr>
       </table>
     </div>
 
-    <div class="col-md-4 col-xs-4 pb-0">
+    <div class="col mb-5 pb-0">
       <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.LeftBoard.Positions; let indexRow = index">
           <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
             [style.background-color]="((side == 'LeftBoard'||side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
             id={{indexRow}}*{{indexColumn}}*LeftBoard*{{column.Id}}>
-            X
           </td>
         </tr>
       </table>
     </div>
 
-
-    <div class="card col-md-2 col-xs-2">
+    <div class="card col col-ms-8 mb-5">
       <div class="card-header">
         <div class="panel-heading top-bar">
-          <div class="col-md-8 col-xs-8">
+           <div class="col">
             <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span>BattleShip</h3>
-          </div>
-          <div class="col-md-4 col-xs-4" style="text-align: right;">
+          </div> 
+          <div class="col" style="text-align: right;">
             <a href="#"><span id="minim_chat_window" class="glyphicon glyphicon-minus icon_minim"></span></a>
             <a href="#"><span class="glyphicon glyphicon-remove icon_close" data-id="chat_window_1"></span></a>
           </div>
         </div>
       </div>
-      <div class="card-body">
-        
-          <ng-container *ngFor="let message of messages">
-                         
-            <div class="text-primary" *ngIf="message.Sender && message.Sender != userName">
-              <b>{{message.Sender}}</b> dice: <br>
-              <p>{{message.Text}}</p>
-            </div>
 
-            <div *ngIf="message.Sender && message.Sender==userName">
-                <b>{{message.Sender}}</b> dice: <br>
-              <p>{{message.Text}}</p>
-            </div>
+      <div class="card-body col">
+        <ng-container *ngFor="let message of messages">
+          <div class="text-primary" *ngIf="message.Sender && message.Sender != loggedUser.nick">
+            <b>{{message.Sender}}</b> dice: <br>
+            <p>{{message.Text}}</p>
+          </div>
 
-            <!-- <div class="row msg_container base_sent" *ngIf="message.Sender == idUser">
-                  <div class="col-md-10 col-xs-10">
-                      <div class="messages msg_sent text-primary">
-                          <p>{{message.Text}}</p>
-                          <time datetime="2009-11-13T20:00">Timothy • 51 min</time>
-                      </div>
-                  </div>            
-              </div>
-              <div class="row msg_container base_receive" *ngIf="message.Sender != idUser">            
-                  <div class="col-md-10 col-xs-10">
-                      <div class="messages msg_receive">
-                          <p>{{message.Text}}</p>
-                          <time datetime="2009-11-13T20:00">Timothy • 51 min</time>
-                      </div>
-                  </div>
-              </div> -->
-           
-          </ng-container>
-        
+          <div *ngIf="message.Sender && message.Sender==loggedUser.nick">
+            <b>{{message.Sender}}</b> dice: <br>
+            <p>{{message.Text}}</p>
+          </div>
+        </ng-container>
       </div>
-    </div>
-
+    </div>    
   </div>
-  <div class="row mt-5">
-
-    <!-- <textarea [(ngModel)] = "gameChatMessage" (keyup.enter)="sendMessage()" class="form-control"></textarea>         -->
-
-    <div class="panel-footer col-md-4 offset-2 col-md-7 messageControlsContainer">
+  <div class="row mt-5 mt-5 mb-5">
+    <div class="panel-footer col-md-8 offset-2 col-xs-8 messageControlsContainer">
       <div class="input-group">
         <input [(ngModel)]="gameChatMessage" (keyup.enter)="sendMessage()" id="btn-input" type="text" class="form-control input-sm chat_input"
           placeholder="Write your message here..." />
@@ -96,5 +70,4 @@
       </div>
     </div>
   </div>
-
 </div>

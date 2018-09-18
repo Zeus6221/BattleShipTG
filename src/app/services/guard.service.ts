@@ -5,26 +5,25 @@ import { LoginService } from './login.service';
 @Injectable({
   providedIn: 'root'
 })
-export class GuardService implements CanActivate{
+export class GuardService implements CanActivate {
 
   loggedIn = false;
+  
   constructor(private loginService: LoginService) {
-    loginService.isLogged().subscribe(result => {
-      if (result && result.uid) {
-        this.loggedIn = true;
-      }
-      else {
-        this.loggedIn = false;
-      }
-
-    },
+    loginService.isLogged().subscribe(
+      result => {
+        let evaluation: boolean = (result != undefined && result.uid != "");
+        console.log("evaluation is :" + evaluation);        
+        this.loggedIn = evaluation;
+      },
       error => {
         this.loggedIn = false;
       }
     )
   }
 
-  canActivate(){
+  canActivate():boolean {
+    console.log(this.loggedIn);
     return this.loggedIn;
   }
 }
