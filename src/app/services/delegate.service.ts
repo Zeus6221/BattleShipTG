@@ -20,6 +20,7 @@ export class DelegateService {
   }
 
   createOrFind(init: InitGame): Observable<Game> {
+    console.log(JSON.stringify(init));
     let headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post<Game>("/api/Game", init, { headers: headers })
   }

@@ -53,9 +53,9 @@ export const firebaseConfig = {
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    AngularFireDatabaseModule,
     ToastrModule.forRoot(),
     RouterModule.forRoot(appRoutes),
+    AngularFireDatabaseModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule
   ],

@@ -8,35 +8,54 @@
     </div>
   </div>
 
-  <div class="row offset-2 col-8 col-ms-8 mt-5 mb-5">    
-    <div class="col mb-5">
-      <table class="table table-bordered battleShipBoard">
-        <tr *ngFor="let row of currentGame.RightBoard.Positions; let indexRow = index">
-          <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
-            [style.background-color]="((side == 'RightBoard'|| side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
-            id={{indexRow}}*{{indexColumn}}*RightBoard*{{column.Id}}>
-          </td>
-        </tr>
-      </table>
-    </div>
+  <div class="row offset-2 col-8 col-ms-8 mt-5 mb-5">
 
     <div class="col mb-5 pb-0">
       <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.LeftBoard.Positions; let indexRow = index">
           <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
-            [style.background-color]="((side == 'LeftBoard'||side=='') && column.Content == 2)? 'transparent':colors[column.Content]"
+            [style.background-color]="column.Content == 2? 'transparent':colors[column.Content]" 
             id={{indexRow}}*{{indexColumn}}*LeftBoard*{{column.Id}}>
+            <img *ngIf="(side == 'RightBoard') && column.ShipInfo && column.ShipInfo.Direction == 0 && (column.Content == 2 || column.Content == 4)"
+              [ngStyle]="{'position': 'absolute', 'top':(indexRow*10)+'%', 'left': (indexColumn*10)+'%', 'width':column.ShipInfo.SeaPercentege, 'height':'10%'}"
+              src="../../assets/img/HorizontalShip{{column.ShipInfo.Size}}.png">
+            <img *ngIf="(side == 'RightBoard') && column.ShipInfo && column.ShipInfo.Direction == 1 && (column.Content == 2 || column.Content == 4)"
+              [ngStyle]="{'position': 'absolute', 'top':(indexRow*10)+'%', 'left': (indexColumn*10)+'%', 'width':'10%', 'height':column.ShipInfo.SeaPercentege }"
+              src="../../assets/img/VerticalShip{{column.ShipInfo.Size}}.png">
           </td>
         </tr>
       </table>
     </div>
 
+
+    <div class="col mb-5">
+      <table class="table table-bordered battleShipBoard">
+        <tr *ngFor="let row of currentGame.RightBoard.Positions; let indexRow = index">
+          <ng-container *ngFor="let column of row; let indexColumn = index">
+            <td (click)="fireTorpedo($event)" 
+              [style.background-color]="(column.Content == 2)? 'transparent':colors[column.Content]"
+              id={{indexRow}}*{{indexColumn}}*RightBoard*{{column.Id}}>
+              <img *ngIf="(side == 'LeftBoard') && column.ShipInfo && column.ShipInfo.Direction == 0 && (column.Content == 2 || column.Content == 4)"
+                [ngStyle]="{'position': 'absolute', 'top':(indexRow*10)+'%', 'left': (indexColumn*10)+'%', 'width':column.ShipInfo.SeaPercentege, 'height':'10%'}"
+                src="../../assets/img/HorizontalShip{{column.ShipInfo.Size}}.png">
+              <img *ngIf="(side == 'LeftBoard') && column.ShipInfo && column.ShipInfo.Direction == 1 && (column.Content == 2 || column.Content == 4)"
+                [ngStyle]="{'position': 'absolute', 'top':(indexRow*10)+'%', 'left': (indexColumn*10)+'%', 'width':'10%', 'height':column.ShipInfo.SeaPercentege }"
+                src="../../assets/img/VerticalShip{{column.ShipInfo.Size}}.png">
+
+            </td>
+          </ng-container>
+        </tr>
+      </table>
+    </div>
+
+
+
     <div class="card col col-ms-8 mb-5">
       <div class="card-header">
         <div class="panel-heading top-bar">
-           <div class="col">
+          <div class="col">
             <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span>BattleShip</h3>
-          </div> 
+          </div>
           <div class="col" style="text-align: right;">
             <a href="#"><span id="minim_chat_window" class="glyphicon glyphicon-minus icon_minim"></span></a>
             <a href="#"><span class="glyphicon glyphicon-remove icon_close" data-id="chat_window_1"></span></a>
@@ -57,7 +76,7 @@
           </div>
         </ng-container>
       </div>
-    </div>    
+    </div>
   </div>
   <div class="row mt-5 mt-5 mb-5">
     <div class="panel-footer col-md-8 offset-2 col-xs-8 messageControlsContainer">
@@ -69,5 +88,7 @@
         </span>
       </div>
     </div>
+
   </div>
+
 </div>

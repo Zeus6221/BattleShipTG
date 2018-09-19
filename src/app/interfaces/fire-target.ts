@@ -1,4 +1,5 @@
 import { ContentCell } from "../enumerations/content-cell.enum";
+import { ShipInfo } from "./ship-info";
 
 export interface FireTarget {
     Row: number;
@@ -7,4 +8,5 @@ export interface FireTarget {
     Side: string;
     Id: string;
     PlayerId: string;
+    ShipInfo:ShipInfo;
 }

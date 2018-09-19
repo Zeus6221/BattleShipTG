@@ -1,9 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 .battleShipBoard
-{
-    background-color: 	#0030F1;   
-}
-
-.battleShipBoard td{
-    border: 1px solid black;
+{    
+    width: 100%; 
+    height: 100%; 
+    position: relative;
+    background: url(/src/assets/img/mar.jpg) no-repeat center center; 
+    -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }

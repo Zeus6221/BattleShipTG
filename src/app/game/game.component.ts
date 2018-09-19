@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { DelegateService } from '../services/delegate.service';
 import { Game } from '../interfaces/game';
 import { FireTarget } from '../interfaces/fire-target';
@@ -25,21 +25,28 @@ export class GameComponent implements OnInit {
   };
 
   fireloaded = false;
-  firstLoad = true;  
+  firstLoad = true;
   currentFire: FireTarget = <FireTarget>{};
   actualGame: ActualGame;
   canPlay: boolean = false;
 
-  shipQuarter:string = "#00F12F";
-  fail:string = "#F10032";
-  success:string = "#F1B500";
+  shipQuarter: string = "#00F12F";
+  fail: string = "#F10032";
+  success: string = "#F1B500";
   colors = ["black", "transparent", this.shipQuarter, this.success, this.fail];
   idGame = "";
   side: string = "";
   conversationId: string = "";
-  gameChatMessage: string = "";  
+  gameChatMessage: string = "";
   messages: Array<Conversation> = new Array<Conversation>();
   loggedUser: User = <User>{};
+
+
+  public innerWidth: any;
+
+
+
+
 
   constructor(
     private conversation: ConversationService,
@@ -55,9 +62,9 @@ export class GameComponent implements OnInit {
       Text: "",
       Timestamp: Date.now()
     };
-    
+
     this.messages.push(mess);
-    this.idGame = route.snapshot.params['id'];           
+    this.idGame = route.snapshot.params['id'];
     this.loadUser();
   }
 
@@ -149,6 +156,15 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit() {
+    
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.innerWidth = window.innerWidth;
+    this.innerWidth = window.innerHeight;
+    console.log(window.innerWidth);
+    console.log(window.outerHeight);
   }
 
   validateShoot(shoot: FireTarget): boolean {
