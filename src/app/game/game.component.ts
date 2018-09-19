@@ -41,6 +41,8 @@ export class GameComponent implements OnInit {
   gameChatMessage: string = "";
   messages: Array<Conversation> = new Array<Conversation>();
   loggedUser: User = <User>{};
+  ownScore:number = 0;
+  opositeScore:number = 0;
 
 
   public innerWidth: any;
@@ -67,6 +69,7 @@ export class GameComponent implements OnInit {
     this.messages.push(mess);
     this.idGame = route.snapshot.params['id'];
     this.loadUser();
+    this.loadActualGame();
   }
 
   loadUser() {
@@ -118,10 +121,22 @@ export class GameComponent implements OnInit {
     this.delegate
       .getActualGame(this.idGame)
       .subscribe(
-        response => {
+        response => {          
           this.actualGame = <ActualGame>response;
-          const ids = [this.actualGame.RightPlayerId, this.actualGame.LeftPlayerId].sort();
-          this.conversationId = ids.join();
+          if(this.side == 'LeftBoard')
+          {
+            this.ownScore = +this.actualGame.LeftFireReceived;
+            this.opositeScore = +this.actualGame.RightFirerecived;
+          }
+          else{
+            this.ownScore = +this.actualGame.RightFirerecived;
+            this.opositeScore = +this.actualGame.LeftFireReceived;
+          }
+          this.isPlayerWin();
+          if(this.conversationId==""){
+            const ids = [this.actualGame.RightPlayerId, this.actualGame.LeftPlayerId].sort();
+            this.conversationId = ids.join();            
+          }
           this.SetOpositPlayer();
         });
   }
@@ -156,18 +171,6 @@ export class GameComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
-    
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.innerWidth = window.innerWidth;
-    this.innerWidth = window.innerHeight;
-    console.log(window.innerWidth);
-    console.log(window.outerHeight);
-  }
-
   validateShoot(shoot: FireTarget): boolean {
 
     var result = true;
@@ -179,7 +182,24 @@ export class GameComponent implements OnInit {
       this.toastr.warning('Estos son tus propios barcos, el fuego amigo no es permitido ;)');
       result = false;
     }
+    if(this.ownScore==10){
+      this.toastr.success('La partida ha terminado, recuerda que ganaste ;)');
+      result = false;
+    }
+    if(this.opositeScore==10){
+      this.toastr.error('La partida ha terminado, practica creando un nuevo juego ;)');
+      result = false;
+    }
     return result;
+  }
+
+  isPlayerWin(){    
+    if (this.ownScore==10) {
+      this.toastr.success('Felicidades ganaste');
+    }
+    if (this.opositeScore==10) {
+      this.toastr.error('Tu oponente ha vencido la próxima vez será;)');
+    }
   }
 
   fireTorpedo(e) {
@@ -202,7 +222,7 @@ export class GameComponent implements OnInit {
       this.delegate.fire(shoot)
         .subscribe(
           response => {
-            console.log(response.Side);
+            console.log("own side: "+response.Side);
           },
           error => {
             console.log("error en disparo");
@@ -213,16 +233,13 @@ export class GameComponent implements OnInit {
   }
 
   getConversations() {
-    console.log(this.conversationId);
-    console.log(this.loggedUser.id);
     if (this.conversationId != "") {
       this.conversation
         .getConversation(this.conversationId)
         .valueChanges()
         .subscribe(
           result => {
-            this.messages = <Array<Conversation>>result;
-            console.log(this.messages);
+            this.messages = <Array<Conversation>>result;            
           },
           error => {
             console.log(error);
@@ -265,7 +282,10 @@ export class GameComponent implements OnInit {
           this.gameChatMessage = "";
         }
       );
-    }
+    }  
+  }
 
+  ngOnInit() {
+    
   }
 }

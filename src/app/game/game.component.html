@@ -11,6 +11,8 @@
   <div class="row offset-2 col-8 col-ms-8 mt-5 mb-5">
 
     <div class="col mb-5 pb-0">
+      <span *ngIf="side == 'RightBoard'" class="text-center">Mis Barcos</span>
+      <span *ngIf="side == 'LeftBoard'" class="text-center">Mar oponente</span>
       <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.LeftBoard.Positions; let indexRow = index">
           <td *ngFor="let column of row; let indexColumn = index" (click)="fireTorpedo($event)"
@@ -29,6 +31,8 @@
 
 
     <div class="col mb-5">
+      <span *ngIf="side == 'RightBoard'" class="text-center">Mar oponente</span>
+      <span *ngIf="side == 'LeftBoard'" class="text-center">Mis Barcos</span>
       <table class="table table-bordered battleShipBoard">
         <tr *ngFor="let row of currentGame.RightBoard.Positions; let indexRow = index">
           <ng-container *ngFor="let column of row; let indexColumn = index">
@@ -48,36 +52,43 @@
       </table>
     </div>
 
-
-
-    <div class="card col col-ms-8 mb-5">
-      <div class="card-header">
-        <div class="panel-heading top-bar">
-          <div class="col">
-            <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span>BS Chat</h3>
-          </div>
-          <div class="col" style="text-align: right;">
-            <a href="#"><span id="minim_chat_window" class="glyphicon glyphicon-minus icon_minim"></span></a>
-            <a href="#"><span class="glyphicon glyphicon-remove icon_close" data-id="chat_window_1"></span></a>
+    <div class="col col-ms-8 mb-5">      
+      <div class="card">        
+        <div class="card-header">
+          <div class="panel-heading top-bar">
+            <div class="col">
+              <h3 class="panel-title text-center"><span class="glyphicon glyphicon-comment"></span>BS Chat</h3>
+            </div>
+            <div class="col" style="text-align: right;">
+              <a href="#"><span id="minim_chat_window" class="glyphicon glyphicon-minus icon_minim"></span></a>
+              <a href="#"><span class="glyphicon glyphicon-remove icon_close" data-id="chat_window_1"></span></a>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="card-body col">
-        <ng-container *ngFor="let message of messages">
-          <div class="text-primary" *ngIf="message.Sender && message.Sender != loggedUser.nick">
-            <b>{{message.Sender}}</b> dice: <br>
-            <p>{{message.Text}}</p>
-          </div>
-
-          <div *ngIf="message.Sender && message.Sender==loggedUser.nick">
-            <b>{{message.Sender}}</b> dice: <br>
-            <p>{{message.Text}}</p>
-          </div>
-        </ng-container>
+  
+        <div class="card-body col">
+          <ng-container *ngFor="let message of messages">
+            <div class="text-primary" *ngIf="message.Sender && message.Sender != loggedUser.nick">
+              <b>{{message.Sender}}</b> dice: <br>
+              <p>{{message.Text}}</p>
+            </div>
+  
+            <div *ngIf="message.Sender && message.Sender==loggedUser.nick">
+              <b>{{message.Sender}}</b> dice: <br>
+              <p>{{message.Text}}</p>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="row offset-2 col col-ms-8">      
+    <span>Yo: {{ownScore}} aciertos</span><br>    
+  </div>
+  <div class="row offset-2 col col-ms-8">            
+      <span>Mi oponente: {{opositeScore}} aciertos</span>
+    </div>
   <div class="row mt-5 mt-5 mb-5">
     <div class="panel-footer col-md-8 offset-2 col-xs-8 messageControlsContainer">
       <div class="input-group">
@@ -88,7 +99,6 @@
         </span>
       </div>
     </div>
-
   </div>
 
 </div>

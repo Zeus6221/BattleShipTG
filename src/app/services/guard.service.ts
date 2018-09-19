@@ -12,8 +12,7 @@ export class GuardService implements CanActivate {
   constructor(private loginService: LoginService) {
     loginService.isLogged().subscribe(
       result => {
-        let evaluation: boolean = (result != undefined && result.uid != "");
-        console.log("evaluation is :" + evaluation);        
+        let evaluation: boolean = (result != undefined && result.uid != "");        
         this.loggedIn = evaluation;
       },
       error => {
@@ -22,8 +21,7 @@ export class GuardService implements CanActivate {
     )
   }
 
-  canActivate():boolean {
-    console.log(this.loggedIn);
+  canActivate():boolean {    
     return this.loggedIn;
   }
 }

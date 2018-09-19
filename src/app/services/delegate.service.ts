@@ -19,8 +19,7 @@ export class DelegateService {
     return this.http.post<FireTarget>("/api/Values", shoot, { headers: headers });
   }
 
-  createOrFind(init: InitGame): Observable<Game> {
-    console.log(JSON.stringify(init));
+  createOrFind(init: InitGame): Observable<Game> {    
     let headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post<Game>("/api/Game", init, { headers: headers })
   }
@@ -35,7 +34,8 @@ export class DelegateService {
   }
 
   getActualGame(idGame: string) {
-    return this.http.get<ActualGame>('/api/ActualGame/' + idGame);
+    //return this.http.get<ActualGame>('/api/ActualGame/' + idGame);    
+    return this.afDB.object('ActualGame/'+idGame).valueChanges();
   }
 
   updateActualGame(actualGame: ActualGame) {    

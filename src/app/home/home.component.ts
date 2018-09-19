@@ -44,9 +44,10 @@ export class HomeComponent implements OnInit {
     this.delegate.getAvailableGames().subscribe(
       response => {
         if (response) {
-          var list = <ActualGame[]>response;
-          console.log(this.loggedUser);
-          list = list.filter(game => game.LeftPlayerId == "" && game.RightPlayerId != this.loggedUser.id);
+          var list = <ActualGame[]>response;     
+          console.log(list)
+          console.log("this user"+this.loggedUser.id);
+          list = list.filter(game => game.RightPlayerId != this.loggedUser.id);
           this.availableGames = list;
         }
       }
@@ -66,8 +67,6 @@ export class HomeComponent implements OnInit {
     this.delegate.createOrFind(init).subscribe(
       result => {
         if (result) {          
-          console.log("para cargar");
-          console.log(result);
           this.router.navigate(['/game/' + result.Id]);
         }
       },
