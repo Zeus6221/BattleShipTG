@@ -12,6 +12,7 @@ import { ConversationService } from '../services/conversation.service';
 import { Conversation } from '../interfaces/conversation';
 import { UserService } from '../services/user.service';
 import { User } from '../interfaces/user';
+import { ShipInfo } from '../interfaces/ship-info';
 
 @Component({
   selector: 'app-game',
@@ -192,7 +193,8 @@ export class GameComponent implements OnInit {
       Content: ContentCell.SuccessImpact,
       Id: dataFire[3],
       Side: dataFire[2],
-      PlayerId: this.loggedUser.id
+      PlayerId: this.loggedUser.id,
+      ShipInfo:<ShipInfo>{}
     }
 
     var validShoot = this.validateShoot(shoot);
