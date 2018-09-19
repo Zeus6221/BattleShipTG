@@ -133,10 +133,10 @@ export class GameComponent implements OnInit {
             this.opositeScore = +this.actualGame.LeftFireReceived;
           }
           this.isPlayerWin();
-          if(this.conversationId==""){
+          
             const ids = [this.actualGame.RightPlayerId, this.actualGame.LeftPlayerId].sort();
             this.conversationId = ids.join();            
-          }
+          
           this.SetOpositPlayer();
         });
   }
